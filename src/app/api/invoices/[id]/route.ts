@@ -1,11 +1,16 @@
 import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "../../../../../lib/prisma";
+import { PrismaClient } from "@prisma/client";
 
+
+const prisma = new PrismaClient();
 // Sử dụng any để bypass hoàn toàn type checking
-export async function GET(request: NextRequest, context: any) {
+
+export async function GET(
+  request: NextRequest,
+  { params }: { params: { id: string } } // kiểu chuẩn
+) {
   try {
-    const resolvedParams = await context.params;
-    const id = Number(resolvedParams.id);
+    const id = Number(params.id);
 
     const roomTenant = await prisma.roomTenant.findUnique({
       where: { id },
@@ -13,18 +18,13 @@ export async function GET(request: NextRequest, context: any) {
     });
 
     if (!roomTenant) {
-      return NextResponse.json(
-        { error: "Room tenant not found" },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: "Room tenant not found" }, { status: 404 });
     }
 
     return NextResponse.json(roomTenant);
   } catch (error) {
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 }
-    );
+    console.error(error);
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }
 
