@@ -1,0 +1,66 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Tenant {
+  id                  Int       @id @default(autoincrement())
+  fullName            String
+  dob                 DateTime?
+  nationalId          String?
+  hometown            String?
+  phone               String?
+  email               String?
+  temporaryResidence  String?
+  roomTenants         RoomTenant[]
+}
+
+model Room {
+  id          Int          @id @default(autoincrement())
+  roomName    String
+  price       Float
+  roomTenants RoomTenant[]
+  usages      Usage[]
+  invoices    Invoice[]
+}
+
+model RoomTenant {
+  id        Int      @id @default(autoincrement())
+  room      Room     @relation(fields: [roomId], references: [id])
+  roomId    Int
+  tenant    Tenant   @relation(fields: [tenantId], references: [id])
+  tenantId  Int
+  startDate DateTime @default(now())
+  endDate   DateTime?
+}
+
+model Setting {
+  id            Int    @id @default(autoincrement())
+  electricPrice Float
+  waterPrice    Float
+}
+
+model Usage {
+  id              Int      @id @default(autoincrement())
+  room            Room     @relation(fields: [roomId], references: [id])
+  roomId          Int
+  month           DateTime
+  electricReading Float
+  waterReading    Float
+}
+
+model Invoice {
+  id          Int      @id @default(autoincrement())
+  room        Room     @relation(fields: [roomId], references: [id])
+  roomId      Int
+  month       DateTime
+  roomPrice   Float
+  electricCost Float
+  waterCost   Float
+  total       Float
+  status      String   @default("UNPAID")
+}
