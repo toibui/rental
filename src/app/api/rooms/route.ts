@@ -3,40 +3,45 @@ import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
-// GET /api/rooms → lấy tất cả rooms
-export async function GET() {
+// GET /api/invoices/:id
+export async function GET(
+  request: Request,
+  { params }: { params: { id: string } }
+) {
   try {
-    const rooms = await prisma.room.findMany({
-      include: { roomTenants: true }, // có thể bỏ nếu không cần
+    const room = await prisma.room.findUnique({
+      where: { id: Number(params.id) },
+      include: {
+        roomTenants: true,
+        usages: true,
+        invoices: true,
+      },
     });
-    return NextResponse.json(rooms, { status: 200 });
+
+    if (!room) {
+      return NextResponse.json({ message: "Room not found" }, { status: 404 });
+    }
+
+    return NextResponse.json(room, { status: 200 });
   } catch (error) {
-    console.error("GET /rooms error:", error);
-    return NextResponse.json(
-      { message: "Server error", error },
-      { status: 500 }
-    );
+    console.error("GET /rooms/[id] error:", error);
+    return NextResponse.json({ message: "Server error", error }, { status: 500 });
   }
 }
 
 // POST /api/rooms → tạo room mới
 export async function POST(request: Request) {
   try {
-    const body = await request.json();
+    const { roomName, price } = await request.json();
 
-    if (!body.roomName || !body.price) {
-      return NextResponse.json(
-        { message: "roomName và price là bắt buộc" },
-        { status: 400 }
-      );
+    if (!roomName || price == null) {
+      return NextResponse.json({ message: "roomName và price là bắt buộc" }, { status: 400 });
     }
 
     const room = await prisma.room.create({
       data: {
-        roomName: body.roomName,
-        price: Number(body.price),
-        usages: body.usages ?? "",
-        invoices: body.invoices ?? "",
+        roomName,
+        price: Number(price),
       },
     });
 
@@ -44,7 +49,7 @@ export async function POST(request: Request) {
   } catch (error) {
     console.error("POST /rooms error:", error);
     return NextResponse.json(
-      { message: "Server error", error },
+      { message: "Server error", error: error instanceof Error ? error.message : error },
       { status: 500 }
     );
   }

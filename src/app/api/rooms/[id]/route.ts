@@ -1,59 +1,81 @@
-import type { NextApiRequest, NextApiResponse } from "next";
-import { PrismaClient } from "@prisma/client";
+import { NextRequest, NextResponse } from "next/server";
+import { prisma } from "../../../../../lib/prisma";
 
-const prisma = new PrismaClient();
-
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  const { id } = req.query;
-
-  if (!id || Array.isArray(id)) {
-    return res.status(400).json({ message: "Invalid tenant id" });
-  }
-
+export async function GET(
+  request: NextRequest,
+  { params }: { params: { id: string } }
+) {
   try {
-    if (req.method === "GET") {
-      // Lấy 1 tenant theo id
-      const room = await prisma.room.findUnique({
-        where: { id: Number(id) },
-        include: { roomTenants: true },
-      });
+    const id = Number(params.id);
+    
+    const room = await prisma.room.findUnique({
+      where: { id },
+      include: {
+        roomTenants: true,
+        usages: true,
+        invoices: true,
+      },
+    });
 
-      if (!room) return res.status(404).json({ message: "room not found" });
-      return res.status(200).json(room);
+    if (!room) {
+      return NextResponse.json(
+        { error: "Room not found" },
+        { status: 404 }
+      );
     }
 
-    if (req.method === "PUT") {
-      // Update room
-      const {
-          roomName ,
-          price,
-          usages,
-          invoices
-      } = req.body;
-
-      const updatedroom = await prisma.room.update({
-        where: { id: Number(id) },
-        data: {
-          roomName ,
-          price,
-          usages,
-          invoices
-        },
-      });
-
-      return res.status(200).json(updatedroom);
-    }
-
-    if (req.method === "DELETE") {
-      await prisma.room.delete({
-        where: { id: Number(id) },
-      });
-      return res.status(204).end();
-    }
-
-    return res.status(405).json({ message: "Method not allowed" });
+    return NextResponse.json(room);
   } catch (error) {
-    console.error(error);
-    return res.status(500).json({ message: "Server error", error });
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 }
+    );
+  }
+}
+
+export async function PUT(
+  request: NextRequest,
+  { params }: { params: { id: string } }
+) {
+  try {
+    const id = Number(params.id);
+    const body = await request.json();
+
+    const updatedRoom = await prisma.room.update({
+      where: { id },
+      data: body,
+      include: {
+        roomTenants: true,
+        usages: true,
+        invoices: true,
+      },
+    });
+
+    return NextResponse.json(updatedRoom);
+  } catch (error) {
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 }
+    );
+  }
+}
+
+export async function DELETE(
+  request: NextRequest,
+  { params }: { params: { id: string } }
+) {
+  try {
+    const id = Number(params.id);
+
+    await prisma.room.delete({
+      where: { id },
+    });
+
+    return NextResponse.json({ message: "Room deleted successfully" });
+  } catch (error) {
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 }
+    );
   }
 }

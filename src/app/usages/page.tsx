@@ -2,64 +2,61 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 
-export default function RoomTenantsPage() {
-  const [roomTenants, setRoomTenants] = useState<any[]>([]);
+export default function UsagePage() {
+  const [usages, setUsages] = useState<any[]>([]);
   const [rooms, setRooms] = useState<any[]>([]);
-  const [tenants, setTenants] = useState<any[]>([]);
-  const [newRT, setNewRT] = useState({
+  const [newUsage, setNewUsage] = useState({
     roomId: "",
-    tenantId: "",
-    startDate: "",
-    endDate: "",
+    month: "",
+    electricReading: "",
+    waterReading: "",
   });
 
   const [editingId, setEditingId] = useState<number | null>(null);
   const [editData, setEditData] = useState<any>({});
 
   const loadData = async () => {
-    const [rtRes, rRes, tRes] = await Promise.all([
-      axios.get("/api/room-tenants"),
+    const [usageRes, roomRes] = await Promise.all([
+      axios.get("/api/usages"),
       axios.get("/api/rooms"),
-      axios.get("/api/tenants"),
     ]);
-    setRoomTenants(rtRes.data);
-    setRooms(rRes.data);
-    setTenants(tRes.data);
+    setUsages(usageRes.data);
+    setRooms(roomRes.data);
   };
 
   useEffect(() => {
     loadData();
   }, []);
 
-  const addRoomTenant = async () => {
-    if (!newRT.roomId || !newRT.tenantId) {
-      alert("Vui lòng chọn phòng và người thuê!");
+  const addUsage = async () => {
+    if (!newUsage.roomId || !newUsage.month) {
+      alert("Vui lòng chọn phòng và tháng!");
       return;
     }
-    await axios.post("/api/room-tenants", {
-      roomId: Number(newRT.roomId),
-      tenantId: Number(newRT.tenantId),
-      startDate: newRT.startDate || new Date(),
-      endDate: newRT.endDate || null,
+    await axios.post("/api/usages", {
+      roomId: Number(newUsage.roomId),
+      month: newUsage.month || new Date(),
+      electricReading: parseFloat(newUsage.electricReading) || 0,
+      waterReading: parseFloat(newUsage.waterReading) || 0,
     });
-    setNewRT({ roomId: "", tenantId: "", startDate: "", endDate: "" });
+    setNewUsage({ roomId: "", month: "", electricReading: "", waterReading: "" });
     loadData();
   };
 
-  const deleteRT = async (id: number) => {
-    if (confirm("Bạn có chắc muốn xóa quan hệ này?")) {
-      await axios.delete(`/api/room-tenants/${id}`);
+  const deleteUsage = async (id: number) => {
+    if (confirm("Bạn có chắc muốn xóa bản ghi này?")) {
+      await axios.delete(`/api/usages/${id}`);
       loadData();
     }
   };
 
-  const startEdit = (rt: any) => {
-    setEditingId(rt.id);
+  const startEdit = (usage: any) => {
+    setEditingId(usage.id);
     setEditData({
-      roomId: rt.roomId,
-      tenantId: rt.tenantId,
-      startDate: rt.startDate ? rt.startDate.slice(0, 10) : "",
-      endDate: rt.endDate ? rt.endDate.slice(0, 10) : "",
+      roomId: usage.roomId,
+      month: usage.month ? usage.month.slice(0, 7) : "",
+      electricReading: usage.electricReading,
+      waterReading: usage.waterReading,
     });
   };
 
@@ -69,15 +66,15 @@ export default function RoomTenantsPage() {
   };
 
   const saveEdit = async (id: number) => {
-    if (!editData.roomId || !editData.tenantId) {
-      alert("Vui lòng chọn phòng và người thuê!");
+    if (!editData.roomId || !editData.month) {
+      alert("Vui lòng chọn phòng và tháng!");
       return;
     }
-    await axios.put(`/api/room-tenants/${id}`, {
+    await axios.put(`/api/usages/${id}`, {
       roomId: Number(editData.roomId),
-      tenantId: Number(editData.tenantId),
-      startDate: editData.startDate || new Date(),
-      endDate: editData.endDate || null,
+      month: editData.month || new Date(),
+      electricReading: parseFloat(editData.electricReading) || 0,
+      waterReading: parseFloat(editData.waterReading) || 0,
     });
     setEditingId(null);
     setEditData({});
@@ -86,16 +83,16 @@ export default function RoomTenantsPage() {
 
   return (
     <div className="p-6 max-w-6xl mx-auto">
-      <h1 className="text-3xl font-bold mb-6 text-center text-blue-600">Quản lý phòng trọ - khách trọ</h1>
+      <h1 className="text-3xl font-bold mb-6 text-center text-blue-600">Quản lý chỉ số điện nước</h1>
 
-      {/* Form thêm RoomTenant */}
+      {/* Form thêm Usage */}
       <div className="bg-white shadow-lg rounded-2xl p-6 mb-6">
-        <h2 className="text-xl font-semibold mb-4">Thêm quan hệ phòng - người thuê</h2>
+        <h2 className="text-xl font-semibold mb-4">Thêm chỉ số mới</h2>
         <div className="grid grid-cols-2 gap-4 mb-4">
           <select
             className="border p-2 rounded hover:border-blue-400"
-            value={newRT.roomId}
-            onChange={(e) => setNewRT({ ...newRT, roomId: e.target.value })}
+            value={newUsage.roomId}
+            onChange={(e) => setNewUsage({ ...newUsage, roomId: e.target.value })}
           >
             <option value="">Chọn phòng</option>
             {rooms.map((r) => (
@@ -104,36 +101,32 @@ export default function RoomTenantsPage() {
               </option>
             ))}
           </select>
-          <select
-            className="border p-2 rounded hover:border-blue-400"
-            value={newRT.tenantId}
-            onChange={(e) => setNewRT({ ...newRT, tenantId: e.target.value })}
-          >
-            <option value="">Chọn người thuê</option>
-            {tenants.map((t) => (
-              <option key={t.id} value={t.id}>
-                {t.fullName} ({t.phone})
-              </option>
-            ))}
-          </select>
           <input
-            type="date"
+            type="month"
             className="border p-2 rounded"
-            value={newRT.startDate}
-            onChange={(e) => setNewRT({ ...newRT, startDate: e.target.value })}
+            value={newUsage.month}
+            onChange={(e) => setNewUsage({ ...newUsage, month: e.target.value })}
           />
           <input
-            type="date"
+            type="number"
             className="border p-2 rounded"
-            value={newRT.endDate}
-            onChange={(e) => setNewRT({ ...newRT, endDate: e.target.value })}
+            placeholder="Điện (kWh)"
+            value={newUsage.electricReading}
+            onChange={(e) => setNewUsage({ ...newUsage, electricReading: e.target.value })}
+          />
+          <input
+            type="number"
+            className="border p-2 rounded"
+            placeholder="Nước (m³)"
+            value={newUsage.waterReading}
+            onChange={(e) => setNewUsage({ ...newUsage, waterReading: e.target.value })}
           />
         </div>
         <button
-          onClick={addRoomTenant}
+          onClick={addUsage}
           className="w-full bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 rounded-xl shadow-md transition-all duration-200"
         >
-          Thêm mới
+          Thêm Usage
         </button>
       </div>
 
@@ -144,24 +137,24 @@ export default function RoomTenantsPage() {
             <tr className="bg-blue-100 text-left text-blue-800">
               <th className="border p-3">STT</th>
               <th className="border p-3">Phòng</th>
-              <th className="border p-3">Người thuê</th>
-              <th className="border p-3">Ngày bắt đầu</th>
-              <th className="border p-3">Ngày kết thúc</th>
+              <th className="border p-3">Tháng</th>
+              <th className="border p-3">Điện</th>
+              <th className="border p-3">Nước</th>
               <th className="border p-3 text-center">Hành động</th>
             </tr>
           </thead>
           <tbody>
-            {roomTenants.length > 0 ? (
-              roomTenants.map((rt, idx) => (
+            {usages.length > 0 ? (
+              usages.map((usage, idx) => (
                 <tr
-                  key={rt.id}
+                  key={usage.id}
                   className={`${
                     idx % 2 === 0 ? "bg-gray-50" : "bg-white"
                   } hover:bg-blue-50 transition-colors`}
                 >
                   <td className="border p-2 font-medium">{idx + 1}</td>
                   <td className="border p-2">
-                    {editingId === rt.id ? (
+                    {editingId === usage.id ? (
                       <select
                         className="border p-1 rounded"
                         value={editData.roomId}
@@ -174,59 +167,50 @@ export default function RoomTenantsPage() {
                         ))}
                       </select>
                     ) : (
-                      rt.room?.roomName
+                      usage.room?.roomName
                     )}
                   </td>
                   <td className="border p-2">
-                    {editingId === rt.id ? (
-                      <select
-                        className="border p-1 rounded"
-                        value={editData.tenantId}
-                        onChange={(e) => setEditData({ ...editData, tenantId: e.target.value })}
-                      >
-                        {tenants.map((t) => (
-                          <option key={t.id} value={t.id}>
-                            {t.fullName}
-                          </option>
-                        ))}
-                      </select>
-                    ) : (
-                      rt.tenant?.fullName
-                    )}
-                  </td>
-                  <td className="border p-2">
-                    {editingId === rt.id ? (
+                    {editingId === usage.id ? (
                       <input
-                        type="date"
+                        type="month"
                         className="border p-1 rounded"
-                        value={editData.startDate}
-                        onChange={(e) => setEditData({ ...editData, startDate: e.target.value })}
+                        value={editData.month}
+                        onChange={(e) => setEditData({ ...editData, month: e.target.value })}
                       />
-                    ) : rt.startDate ? (
-                      new Date(rt.startDate).toLocaleDateString("vi-VN")
                     ) : (
-                      ""
+                      new Date(usage.month).toLocaleDateString("vi-VN", { month: "2-digit", year: "numeric" })
                     )}
                   </td>
                   <td className="border p-2">
-                    {editingId === rt.id ? (
+                    {editingId === usage.id ? (
                       <input
-                        type="date"
+                        type="number"
                         className="border p-1 rounded"
-                        value={editData.endDate || ""}
-                        onChange={(e) => setEditData({ ...editData, endDate: e.target.value })}
+                        value={editData.electricReading}
+                        onChange={(e) => setEditData({ ...editData, electricReading: e.target.value })}
                       />
-                    ) : rt.endDate ? (
-                      new Date(rt.endDate).toLocaleDateString("vi-VN")
                     ) : (
-                      "—"
+                      usage.electricReading.toLocaleString("vi-VN")
+                    )}
+                  </td>
+                  <td className="border p-2">
+                    {editingId === usage.id ? (
+                      <input
+                        type="number"
+                        className="border p-1 rounded"
+                        value={editData.waterReading}
+                        onChange={(e) => setEditData({ ...editData, waterReading: e.target.value })}
+                      />
+                    ) : (
+                      usage.waterReading.toLocaleString("vi-VN")
                     )}
                   </td>
                   <td className="border p-2 text-center space-x-2">
-                    {editingId === rt.id ? (
+                    {editingId === usage.id ? (
                       <>
                         <button
-                          onClick={() => saveEdit(rt.id)}
+                          onClick={() => saveEdit(usage.id)}
                           className="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded shadow-sm transition-all"
                         >
                           Lưu
@@ -241,13 +225,13 @@ export default function RoomTenantsPage() {
                     ) : (
                       <>
                         <button
-                          onClick={() => startEdit(rt)}
+                          onClick={() => startEdit(usage)}
                           className="bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-1 rounded shadow-sm transition-all"
                         >
                           Sửa
                         </button>
                         <button
-                          onClick={() => deleteRT(rt.id)}
+                          onClick={() => deleteUsage(usage.id)}
                           className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded shadow-sm transition-all"
                         >
                           Xóa
