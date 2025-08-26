@@ -25,25 +25,19 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     if (req.method === "PUT") {
       // Update room
       const {
-        fullName,
-        dob,
-        nationalId,
-        hometown,
-        phone,
-        email,
-        temporaryResidence,
+          roomName ,
+          price,
+          usages,
+          invoices
       } = req.body;
 
       const updatedroom = await prisma.room.update({
         where: { id: Number(id) },
         data: {
-          fullName,
-          dob: dob ? new Date(dob) : null,
-          nationalId,
-          hometown,
-          phone,
-          email,
-          temporaryResidence,
+          roomName ,
+          price,
+          usages,
+          invoices
         },
       });
 
