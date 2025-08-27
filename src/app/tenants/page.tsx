@@ -155,7 +155,7 @@ export default function TenantsPage() {
       </div>
 
       {/* Bảng danh sách */}
-      <div className="bg-white shadow-lg rounded-2xl overflow-hidden">
+      <div className="bg-white shadow-lg rounded-2xl overflow-hidden overflow-x-auto">
         <table className="w-full text-sm border-collapse">
           <thead>
             <tr className="bg-gray-200 text-left text-gray-800">
