@@ -4,28 +4,15 @@ import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 
 // GET /api/invoices/:id
-export async function GET(
-  request: Request,
-  { params }: { params: { id: string } }
-) {
+export async function GET() {
   try {
-    const room = await prisma.room.findUnique({
-      where: { id: Number(params.id) },
-      include: {
-        roomTenants: true,
-        usages: true,
-        invoices: true,
-      },
-    });
-
-    if (!room) {
-      return NextResponse.json({ message: "Room not found" }, { status: 404 });
-    }
-
-    return NextResponse.json(room, { status: 200 });
+    const rooms = await prisma.room.findMany();
+    return NextResponse.json(rooms, { status: 200 });
   } catch (error) {
-    console.error("GET /rooms/[id] error:", error);
-    return NextResponse.json({ message: "Server error", error }, { status: 500 });
+    console.error("API /tenants GET error:", error);
+    return NextResponse.json({ error: "Server error" }, { status: 500 });
+  } finally {
+    await prisma.$disconnect();
   }
 }
 
