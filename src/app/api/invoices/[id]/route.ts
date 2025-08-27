@@ -1,67 +1,89 @@
 import { NextRequest, NextResponse } from "next/server";
 import { PrismaClient } from "@prisma/client";
 
-
 const prisma = new PrismaClient();
-// Sử dụng any để bypass hoàn toàn type checking
 
+// Lấy invoice theo id
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } } // kiểu chuẩn
+  { params }: { params: { id: string } }
 ) {
   try {
     const id = Number(params.id);
 
-    const roomTenant = await prisma.roomTenant.findUnique({
+    const invoice = await prisma.invoice.findUnique({
       where: { id },
-      include: { room: true, tenant: true },
+      include: { room: true }, // nếu muốn kèm thông tin room
     });
 
-    if (!roomTenant) {
-      return NextResponse.json({ error: "Room tenant not found" }, { status: 404 });
+    if (!invoice) {
+      return NextResponse.json(
+        { error: "Invoice not found" },
+        { status: 404 }
+      );
     }
 
-    return NextResponse.json(roomTenant);
-  } catch (error) {
-    console.error(error);
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
-  }
-}
-
-export async function PUT(request: NextRequest, context: any) {
-  try {
-    const resolvedParams = await context.params;
-    const id = Number(resolvedParams.id);
-    const body = await request.json();
-
-    const updatedRoomTenant = await prisma.roomTenant.update({
-      where: { id },
-      data: body,
-      include: { room: true, tenant: true },
-    });
-
-    return NextResponse.json(updatedRoomTenant);
-  } catch (error) {
+    return NextResponse.json(invoice);
+  } catch (error: any) {
+    console.error("GET /invoices/[id] error:", error);
     return NextResponse.json(
-      { error: "Internal server error" },
+      { error: "Internal server error", details: error.message },
       { status: 500 }
     );
   }
 }
 
-export async function DELETE(request: NextRequest, context: any) {
+// Cập nhật invoice
+export async function PUT(
+  request: NextRequest,
+  { params }: { params: { id: string } }
+) {
   try {
-    const resolvedParams = await context.params;
-    const id = Number(resolvedParams.id);
+    const id = Number(params.id);
+    const body = await request.json();
 
-    await prisma.roomTenant.delete({
+    const updatedInvoice = await prisma.invoice.update({
+      where: { id },
+      data: {
+        roomId: body.roomId,
+        // Nếu client gửi "2025-08" → convert thành ngày đầu tháng
+        month: body.month ? new Date(body.month + "-01") : undefined,
+        roomPrice: body.roomPrice,
+        electricCost: body.electricCost,
+        waterCost: body.waterCost,
+        total: body.total,
+        status: body.status,
+      },
+      include: { room: true },
+    });
+
+    return NextResponse.json(updatedInvoice);
+  } catch (error: any) {
+    console.error("PUT /invoices/[id] error:", error);
+    return NextResponse.json(
+      { error: "Internal server error", details: error.message },
+      { status: 500 }
+    );
+  }
+}
+
+// Xoá invoice
+export async function DELETE(
+  request: NextRequest,
+  { params }: { params: { id: string } }
+) {
+  try {
+    const id = Number(params.id);
+
+    await prisma.invoice.delete({
       where: { id },
     });
 
     return NextResponse.json({ message: "Deleted successfully" });
-  } catch (error) {
+  } catch (error: any) {
+    console.error("DELETE /invoices/[id] error:", error);
     return NextResponse.json(
-      { error: "Internal server error" },
+      { error: "Internal server error", details: error.message },
       { status: 500 }
     );
   }
