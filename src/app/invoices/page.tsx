@@ -107,7 +107,7 @@ export default function InvoicePage() {
   };
 
   return (
-    <div className="p-6 max-w-6xl mx-auto">
+    <div className="p-6 w-full max-w-full">
       <h1 className="text-3xl font-bold mb-6 text-center text-gray-800">Quản lý hóa đơn</h1>
 
       {/* Form thêm hóa đơn */}
