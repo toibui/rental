@@ -57,21 +57,21 @@ export default function RoomsPage() {
   };
 
   return (
-    <div className="p-6 max-w-4xl mx-auto">
-      <h1 className="text-3xl font-bold mb-6 text-center text-blue-600">Quản lý thông tin phòng trọ</h1>
+    <div className="p-6 max-w-6xl mx-auto">
+      <h1 className="text-3xl font-bold mb-6 text-center text-gray-800">Quản lý thông tin phòng trọ</h1>
 
       {/* Form thêm phòng */}
       <div className="bg-white shadow-lg rounded-2xl p-6 mb-6">
-        <h2 className="text-xl font-semibold mb-4">Thêm phòng mới</h2>
-        <div className="grid grid-cols-2 gap-3 mb-4">
+        <h2 className="text-xl font-semibold mb-4 text-gray-700">Thêm phòng mới</h2>
+        <div className="grid grid-cols-2 gap-4 mb-4">
           <input
-            className="border p-2 rounded focus:ring-2 focus:ring-blue-400"
+            className="border p-2 rounded hover:border-gray-500"
             placeholder="Tên phòng"
             value={newRoom.roomName}
             onChange={(e) => setNewRoom({ ...newRoom, roomName: e.target.value })}
           />
           <input
-            className="border p-2 rounded focus:ring-2 focus:ring-blue-400"
+            className="border p-2 rounded hover:border-gray-500"
             placeholder="Tiền phòng"
             type="number"
             value={newRoom.price}
@@ -80,17 +80,17 @@ export default function RoomsPage() {
         </div>
         <button
           onClick={addRoom}
-          className="w-full bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-xl shadow-md transition-all"
+          className="w-full bg-gray-800 hover:bg-black text-white font-semibold py-2 rounded-xl shadow-md transition-all duration-200"
         >
           Thêm phòng
         </button>
       </div>
 
       {/* Bảng danh sách */}
-      <div className="bg-white shadow-lg rounded-2xl overflow-auto">
+      <div className="bg-white shadow-lg rounded-2xl overflow-hidden">
         <table className="w-full text-sm border-collapse">
           <thead>
-            <tr className="bg-blue-100 text-left text-blue-800">
+            <tr className="bg-gray-200 text-left text-gray-800">
               <th className="border p-3">STT</th>
               <th className="border p-3">Tên phòng</th>
               <th className="border p-3">Tiền phòng</th>
@@ -102,7 +102,7 @@ export default function RoomsPage() {
               rooms.map((room, idx) => (
                 <tr
                   key={room.id}
-                  className={`${idx % 2 === 0 ? "bg-gray-50" : "bg-white"} hover:bg-blue-50 transition-colors`}
+                  className={`${idx % 2 === 0 ? "bg-gray-50" : "bg-white"} hover:bg-gray-100 transition-colors`}
                 >
                   <td className="border p-2 font-medium">{idx + 1}</td>
                   <td className="border p-2">
@@ -133,13 +133,13 @@ export default function RoomsPage() {
                       <>
                         <button
                           onClick={() => saveEdit(room.id)}
-                          className="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded shadow-sm transition-all"
+                          className="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded shadow-sm transition-all"
                         >
                           Lưu
                         </button>
                         <button
                           onClick={() => setEditingId(null)}
-                          className="bg-gray-400 hover:bg-gray-500 text-white px-3 py-1 rounded shadow-sm transition-all"
+                          className="bg-gray-500 hover:bg-gray-600 text-white px-3 py-1 rounded shadow-sm transition-all"
                         >
                           Hủy
                         </button>
@@ -148,13 +148,13 @@ export default function RoomsPage() {
                       <>
                         <button
                           onClick={() => startEdit(room)}
-                          className="bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-1 rounded shadow-sm transition-all"
+                          className="bg-gray-700 hover:bg-black text-white px-3 py-1 rounded shadow-sm transition-all"
                         >
                           Sửa
                         </button>
                         <button
                           onClick={() => deleteRoom(room.id)}
-                          className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded shadow-sm transition-all"
+                          className="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded shadow-sm transition-all"
                         >
                           Xóa
                         </button>

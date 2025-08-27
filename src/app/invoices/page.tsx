@@ -108,7 +108,7 @@ export default function InvoicePage() {
 
   return (
     <div className="p-6 max-w-6xl mx-auto">
-      <h1 className="text-3xl font-bold mb-6 text-center text-blue-600">Quản lý hóa đơn</h1>
+      <h1 className="text-3xl font-bold mb-6 text-center text-gray-800">Quản lý hóa đơn</h1>
 
       {/* Form thêm hóa đơn */}
       <div className="bg-white shadow-lg rounded-2xl p-6 mb-6">
@@ -142,7 +142,7 @@ export default function InvoicePage() {
           </select>
 
           <button
-            className={`bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-xl shadow-md transition-all duration-200 ${loading ? "opacity-50" : ""}`}
+            className={`bg-gray-800 hover:bg-gray-600 text-white px-4 py-2 rounded-xl shadow-md transition-all duration-200 ${loading ? "opacity-50" : ""}`}
             onClick={createInvoice}
             disabled={loading}
           >
@@ -182,7 +182,7 @@ export default function InvoicePage() {
         </select>
 
         <button
-          className="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-xl"
+          className="bg-gray-800 hover:bg-gray-700 text-white px-4 py-2 rounded-xl"
           onClick={loadInvoices}
         >
           Lọc
@@ -190,10 +190,10 @@ export default function InvoicePage() {
       </div>
 
       {/* Bảng hóa đơn */}
-      <div className="bg-white shadow-lg rounded-2xl overflow-auto">
+      <div className="bg-white shadow-lg rounded-2xl overflow-hidden">
         <table className="w-full text-sm border-collapse">
           <thead>
-            <tr className="bg-blue-100 text-left text-blue-800">
+            <tr className="bg-gray-200 text-left text-gray-800">
               <th className="border p-3">STT</th>
               <th className="border p-3">Phòng</th>
               <th className="border p-3">Tháng</th>
@@ -265,13 +265,13 @@ export default function InvoicePage() {
                       <>
                         <button
                           onClick={() => saveEdit(invoice.id)}
-                          className="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded shadow-sm transition-all"
+                          className="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded shadow-sm transition-all"
                         >
                           Lưu
                         </button>
                         <button
                           onClick={cancelEdit}
-                          className="bg-gray-400 hover:bg-gray-500 text-white px-3 py-1 rounded shadow-sm transition-all"
+                          className="bg-gray-500 hover:bg-gray-600 text-white px-3 py-1 rounded shadow-sm transition-all"
                         >
                           Hủy
                         </button>
@@ -280,13 +280,13 @@ export default function InvoicePage() {
                       <>
                         <button
                           onClick={() => startEdit(invoice)}
-                          className="bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-1 rounded shadow-sm transition-all"
+                          className="bg-gray-700 hover:bg-black text-white px-3 py-1 rounded shadow-sm transition-all"
                         >
                           Sửa
                         </button>
                         <button
                           onClick={() => deleteInvoice(invoice.id)}
-                          className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded shadow-sm transition-all"
+                          className="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded shadow-sm transition-all"
                         >
                           Xóa
                         </button>

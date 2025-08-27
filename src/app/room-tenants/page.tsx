@@ -15,6 +15,7 @@ export default function RoomTenantsPage() {
 
   const [editingId, setEditingId] = useState<number | null>(null);
   const [editData, setEditData] = useState<any>({});
+  const [filters, setFilters] = useState({ roomId: "", tenantId: "" });
 
   const loadData = async () => {
     const [rtRes, rRes, tRes] = await Promise.all([
@@ -84,16 +85,24 @@ export default function RoomTenantsPage() {
     loadData();
   };
 
+  // filter client-side
+  const filteredRT = roomTenants.filter((rt) => {
+    return (
+      (filters.roomId ? rt.roomId === Number(filters.roomId) : true) &&
+      (filters.tenantId ? rt.tenantId === Number(filters.tenantId) : true)
+    );
+  });
+
   return (
     <div className="p-6 max-w-6xl mx-auto">
-      <h1 className="text-3xl font-bold mb-6 text-center text-blue-600">Quản lý phòng trọ - khách trọ</h1>
+      <h1 className="text-3xl font-bold mb-6 text-center text-gray-800">Quản lý phòng trọ - khách trọ</h1>
 
       {/* Form thêm RoomTenant */}
       <div className="bg-white shadow-lg rounded-2xl p-6 mb-6">
-        <h2 className="text-xl font-semibold mb-4">Thêm quan hệ phòng - người thuê</h2>
+        <h2 className="text-xl font-semibold mb-4 text-gray-700">Thêm mới</h2>
         <div className="grid grid-cols-2 gap-4 mb-4">
           <select
-            className="border p-2 rounded hover:border-blue-400"
+            className="border p-2 rounded hover:border-gray-500"
             value={newRT.roomId}
             onChange={(e) => setNewRT({ ...newRT, roomId: e.target.value })}
           >
@@ -105,7 +114,7 @@ export default function RoomTenantsPage() {
             ))}
           </select>
           <select
-            className="border p-2 rounded hover:border-blue-400"
+            className="border p-2 rounded hover:border-gray-500"
             value={newRT.tenantId}
             onChange={(e) => setNewRT({ ...newRT, tenantId: e.target.value })}
           >
@@ -131,9 +140,43 @@ export default function RoomTenantsPage() {
         </div>
         <button
           onClick={addRoomTenant}
-          className="w-full bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 rounded-xl shadow-md transition-all duration-200"
+          className="w-full bg-gray-800 hover:bg-black text-white font-semibold py-2 rounded-xl shadow-md transition-all duration-200"
         >
           Thêm mới
+        </button>
+      </div>
+
+      {/* Bộ lọc */}
+      <div className="bg-gray-100 shadow rounded-xl p-4 mb-6 flex gap-4">
+        <select
+          className="border p-2 rounded"
+          value={filters.roomId}
+          onChange={(e) => setFilters({ ...filters, roomId: e.target.value })}
+        >
+          <option value="">Lọc theo phòng</option>
+          {rooms.map((r) => (
+            <option key={r.id} value={r.id}>
+              {r.roomName}
+            </option>
+          ))}
+        </select>
+        <select
+          className="border p-2 rounded"
+          value={filters.tenantId}
+          onChange={(e) => setFilters({ ...filters, tenantId: e.target.value })}
+        >
+          <option value="">Lọc theo người thuê</option>
+          {tenants.map((t) => (
+            <option key={t.id} value={t.id}>
+              {t.fullName}
+            </option>
+          ))}
+        </select>
+        <button
+          onClick={() => setFilters({ roomId: "", tenantId: "" })}
+          className="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded"
+        >
+          Xóa lọc
         </button>
       </div>
 
@@ -141,7 +184,7 @@ export default function RoomTenantsPage() {
       <div className="bg-white shadow-lg rounded-2xl overflow-hidden">
         <table className="w-full text-sm border-collapse">
           <thead>
-            <tr className="bg-blue-100 text-left text-blue-800">
+            <tr className="bg-gray-200 text-left text-gray-800">
               <th className="border p-3">STT</th>
               <th className="border p-3">Phòng</th>
               <th className="border p-3">Người thuê</th>
@@ -151,13 +194,13 @@ export default function RoomTenantsPage() {
             </tr>
           </thead>
           <tbody>
-            {roomTenants.length > 0 ? (
-              roomTenants.map((rt, idx) => (
+            {filteredRT.length > 0 ? (
+              filteredRT.map((rt, idx) => (
                 <tr
                   key={rt.id}
                   className={`${
                     idx % 2 === 0 ? "bg-gray-50" : "bg-white"
-                  } hover:bg-blue-50 transition-colors`}
+                  } hover:bg-gray-100 transition-colors`}
                 >
                   <td className="border p-2 font-medium">{idx + 1}</td>
                   <td className="border p-2">
@@ -227,13 +270,13 @@ export default function RoomTenantsPage() {
                       <>
                         <button
                           onClick={() => saveEdit(rt.id)}
-                          className="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded shadow-sm transition-all"
+                          className="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded shadow-sm transition-all"
                         >
                           Lưu
                         </button>
                         <button
                           onClick={cancelEdit}
-                          className="bg-gray-400 hover:bg-gray-500 text-white px-3 py-1 rounded shadow-sm transition-all"
+                          className="bg-gray-500 hover:bg-gray-600 text-white px-3 py-1 rounded shadow-sm transition-all"
                         >
                           Hủy
                         </button>
@@ -242,13 +285,13 @@ export default function RoomTenantsPage() {
                       <>
                         <button
                           onClick={() => startEdit(rt)}
-                          className="bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-1 rounded shadow-sm transition-all"
+                          className="bg-gray-700 hover:bg-black text-white px-3 py-1 rounded shadow-sm transition-all"
                         >
                           Sửa
                         </button>
                         <button
                           onClick={() => deleteRT(rt.id)}
-                          className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded shadow-sm transition-all"
+                          className="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded shadow-sm transition-all"
                         >
                           Xóa
                         </button>

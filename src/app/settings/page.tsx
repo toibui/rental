@@ -78,14 +78,14 @@ export default function SettingPage() {
         <div className="flex gap-3">
           <button
             onClick={saveSetting}
-            className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-xl"
+            className="bg-gray-700 hover:bg-black text-white px-4 py-2 rounded-xl"
           >
             {setting ? "Cập nhật" : "Thêm"}
           </button>
           {setting && (
             <button
               onClick={deleteSetting}
-              className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-xl"
+              className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-xl"
             >
               Xóa
             </button>
