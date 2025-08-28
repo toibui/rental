@@ -29,6 +29,12 @@ export default function Navbar() {
               Quản lý hoá đơn
             </Link>
             <Link
+              href="/usages"
+              className="block px-4 py-2 hover:bg-gray-100 rounded-b-lg"
+            >
+              Quản lý chỉ số
+            </Link>
+            <Link
               href="/settings"
               className="block px-4 py-2 hover:bg-gray-100 rounded-b-lg"
             >
@@ -52,12 +58,7 @@ export default function Navbar() {
             >
               Thông tin phòng
             </Link>
-            <Link
-              href="/usages"
-              className="block px-4 py-2 hover:bg-gray-100 rounded-b-lg"
-            >
-              Quản lý chỉ số
-            </Link>
+
           </div>
         </div>
       </div>

@@ -191,120 +191,145 @@ export default function InvoicePage() {
 
       {/* Bảng hóa đơn */}
       <div className="bg-white shadow-lg rounded-2xl overflow-hidden">
-        <table className="w-full text-sm border-collapse">
-          <thead>
-            <tr className="bg-gray-200 text-left text-gray-800">
-              <th className="border p-3">STT</th>
-              <th className="border p-3">Phòng</th>
-              <th className="border p-3">Tháng</th>
-              <th className="border p-3">Tiền phòng</th>
-              <th className="border p-3">Tiền điện</th>
-              <th className="border p-3">Tiền nước</th>
-              <th className="border p-3">Tổng</th>
-              <th className="border p-3">Trạng thái</th>
-              <th className="border p-3 text-center">Hành động</th>
-            </tr>
-          </thead>
-          <tbody>
-            {invoices.length > 0 ? (
-              invoices.map((invoice, idx) => (
-                <tr key={invoice.id} className={`${idx % 2 === 0 ? "bg-gray-50" : "bg-white"} hover:bg-blue-50 transition-colors`}>
-                  <td className="border p-2 font-medium">{idx + 1}</td>
-
-                  <td className="border p-2">
-                    {editingId === invoice.id ? (
-                      <select
-                        className="border p-1 rounded"
-                        value={editData.roomId}
-                        onChange={(e) => setEditData({ ...editData, roomId: e.target.value })}
-                      >
-                        {rooms.map((r) => (
-                          <option key={r.id} value={r.id}>{r.roomName}</option>
-                        ))}
-                      </select>
-                    ) : (
-                      invoice.room?.roomName
-                    )}
-                  </td>
-
-                  <td className="border p-2">
-                    {editingId === invoice.id ? (
-                      <input
-                        type="month"
-                        className="border p-1 rounded"
-                        value={editData.month}
-                        onChange={(e) => setEditData({ ...editData, month: e.target.value })}
-                      />
-                    ) : (
-                      new Date(invoice.month).toLocaleDateString("vi-VN", { month: "2-digit", year: "numeric" })
-                    )}
-                  </td>
-
-                  <td className="border p-2">{invoice.roomPrice.toLocaleString("vi-VN")}</td>
-                  <td className="border p-2">{invoice.electricCost.toLocaleString("vi-VN")}</td>
-                  <td className="border p-2">{invoice.waterCost.toLocaleString("vi-VN")}</td>
-                  <td className="border p-2 font-semibold">{invoice.total.toLocaleString("vi-VN")}</td>
-
-                  <td className="border p-2">
-                    {editingId === invoice.id ? (
-                      <select
-                        className="border p-1 rounded"
-                        value={editData.status}
-                        onChange={(e) => setEditData({ ...editData, status: e.target.value })}
-                      >
-                        <option value="UNPAID">Chưa thanh toán</option>
-                        <option value="PAID">Đã thanh toán</option>
-                      </select>
-                    ) : (
-                      invoice.status
-                    )}
-                  </td>
-
-                  <td className="border p-2 text-center space-x-2">
-                    {editingId === invoice.id ? (
-                      <>
-                        <button
-                          onClick={() => saveEdit(invoice.id)}
-                          className="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded shadow-sm transition-all"
+        <div className="overflow-x-auto">
+          <table className="w-full min-w-max text-sm border-collapse">
+            <thead>
+              <tr className="bg-gray-200 text-left text-gray-800">
+                <th className="border p-3">STT</th>
+                <th className="border p-3">Phòng</th>
+                <th className="border p-3">Tháng</th>
+                <th className="border p-3">Tiền phòng</th>
+                <th className="border p-3">Tiền điện</th>
+                <th className="border p-3">Tiền nước</th>
+                <th className="border p-3">Tổng</th>
+                <th className="border p-3">Trạng thái</th>
+                <th className="border p-3 text-center">Hành động</th>
+              </tr>
+            </thead>
+            <tbody>
+              {invoices.length > 0 ? (
+                invoices.map((invoice, idx) => (
+                  <tr
+                    key={invoice.id}
+                    className={`${
+                      idx % 2 === 0 ? "bg-gray-50" : "bg-white"
+                    } hover:bg-blue-50 transition-colors`}
+                  >
+                    <td className="border p-2 font-medium">{idx + 1}</td>
+                    <td className="border p-2">
+                      {editingId === invoice.id ? (
+                        <select
+                          className="border p-1 rounded"
+                          value={editData.roomId}
+                          onChange={(e) =>
+                            setEditData({ ...editData, roomId: e.target.value })
+                          }
                         >
-                          Lưu
-                        </button>
-                        <button
-                          onClick={cancelEdit}
-                          className="bg-gray-500 hover:bg-gray-600 text-white px-3 py-1 rounded shadow-sm transition-all"
+                          {rooms.map((r) => (
+                            <option key={r.id} value={r.id}>
+                              {r.roomName}
+                            </option>
+                          ))}
+                        </select>
+                      ) : (
+                        invoice.room?.roomName
+                      )}
+                    </td>
+                    <td className="border p-2">
+                      {editingId === invoice.id ? (
+                        <input
+                          type="month"
+                          className="border p-1 rounded"
+                          value={editData.month}
+                          onChange={(e) =>
+                            setEditData({ ...editData, month: e.target.value })
+                          }
+                        />
+                      ) : (
+                        new Date(invoice.month).toLocaleDateString("vi-VN", {
+                          month: "2-digit",
+                          year: "numeric",
+                        })
+                      )}
+                    </td>
+                    <td className="border p-2">
+                      {invoice.roomPrice.toLocaleString("vi-VN")}
+                    </td>
+                    <td className="border p-2">
+                      {invoice.electricCost.toLocaleString("vi-VN")}
+                    </td>
+                    <td className="border p-2">
+                      {invoice.waterCost.toLocaleString("vi-VN")}
+                    </td>
+                    <td className="border p-2 font-semibold">
+                      {invoice.total.toLocaleString("vi-VN")}
+                    </td>
+                    <td className="border p-2">
+                      {editingId === invoice.id ? (
+                        <select
+                          className="border p-1 rounded"
+                          value={editData.status}
+                          onChange={(e) =>
+                            setEditData({ ...editData, status: e.target.value })
+                          }
                         >
-                          Hủy
-                        </button>
-                      </>
-                    ) : (
-                      <>
-                        <button
-                          onClick={() => startEdit(invoice)}
-                          className="bg-gray-700 hover:bg-black text-white px-3 py-1 rounded shadow-sm transition-all"
-                        >
-                          Sửa
-                        </button>
-                        <button
-                          onClick={() => deleteInvoice(invoice.id)}
-                          className="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded shadow-sm transition-all"
-                        >
-                          Xóa
-                        </button>
-                      </>
-                    )}
+                          <option value="UNPAID">Chưa thanh toán</option>
+                          <option value="PAID">Đã thanh toán</option>
+                        </select>
+                      ) : (
+                        invoice.status
+                      )}
+                    </td>
+                    <td className="border p-2 text-center space-x-2 whitespace-nowrap">
+                      {editingId === invoice.id ? (
+                        <>
+                          <button
+                            onClick={() => saveEdit(invoice.id)}
+                            className="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded shadow-sm transition-all"
+                          >
+                            Lưu
+                          </button>
+                          <button
+                            onClick={cancelEdit}
+                            className="bg-gray-500 hover:bg-gray-600 text-white px-3 py-1 rounded shadow-sm transition-all"
+                          >
+                            Hủy
+                          </button>
+                        </>
+                      ) : (
+                        <>
+                          <button
+                            onClick={() => startEdit(invoice)}
+                            className="bg-gray-700 hover:bg-black text-white px-3 py-1 rounded shadow-sm transition-all"
+                          >
+                            Sửa
+                          </button>
+                          <button
+                            onClick={() => deleteInvoice(invoice.id)}
+                            className="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded shadow-sm transition-all"
+                          >
+                            Xóa
+                          </button>
+                        </>
+                      )}
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td
+                    colSpan={9}
+                    className="text-center py-4 text-gray-500 italic"
+                  >
+                    Chưa có hóa đơn
                   </td>
                 </tr>
-              ))
-            ) : (
-              <tr>
-                <td colSpan={9} className="text-center py-4 text-gray-500 italic">
-                  Chưa có hóa đơn
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
+
     </div>
   );
 }
