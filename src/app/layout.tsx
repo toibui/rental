@@ -1,5 +1,6 @@
 import "./globals.css";
 import Navbar from "./components/Navbar";
+import { Providers } from "./providers";
 
 export const metadata = {
   title: "My App",
@@ -14,11 +15,11 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="font-sans">
-        {/* Navbar sẽ hiển thị cho mọi page */}
-        <Navbar />
-        <main>{children}</main>
+        <Providers>
+          <Navbar />
+          <main>{children}</main>
+        </Providers>
       </body>
     </html>
   );
 }
-

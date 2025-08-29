@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import axios from "axios";
-
+import ProtectedPage from "../components/ProtectedPage";
 export default function SettingPage() {
   const [setting, setSetting] = useState<{ id: number; electricPrice: number; waterPrice: number } | null>(null);
   const [editData, setEditData] = useState({ electricPrice: "", waterPrice: "" });
@@ -50,6 +50,7 @@ export default function SettingPage() {
   };
 
   return (
+    <ProtectedPage>
     <div className="p-6 max-w-2xl mx-auto">
       <h1 className="text-2xl font-bold mb-6 text-center">Cài đặt giá điện – nước</h1>
 
@@ -93,5 +94,6 @@ export default function SettingPage() {
         </div>
       </div>
     </div>
+    </ProtectedPage>
   );
 }
